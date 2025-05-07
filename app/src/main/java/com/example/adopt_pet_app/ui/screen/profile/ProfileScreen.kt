@@ -1,3 +1,4 @@
+//ProfileScreen.kt
 package com.example.adopt_pet_app.ui.screen.profile
 
 import androidx.compose.foundation.Image
@@ -27,15 +28,14 @@ fun getProfileRoute(userId: String) = "profile/$userId"
 
 @Composable
 fun ProfileScreen(userId: String, navController: NavHostController) {
-    val viewModel: ProfileViewModel = viewModel()
+    val viewModel: ProfileViewModel = viewModel(
+        factory = ProfileViewModelFactory(userId)
+    )
     val tabs = listOf("Post", "About")
     var selectedTab by remember { mutableStateOf(0) }
-
     val userPosts = viewModel.userPosts
+    val username = viewModel.username
 
-    LaunchedEffect(userId) {
-        viewModel.loadUserPosts(userId)
-    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -72,7 +72,7 @@ fun ProfileScreen(userId: String, navController: NavHostController) {
                     .background(Color.Gray)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(userId, style = MaterialTheme.typography.titleMedium)
+            Text(username, style = MaterialTheme.typography.titleMedium)
             Text("Vung Tau, Vie", color = Color.Gray)
         }
 

@@ -1,7 +1,6 @@
 //PostViewModel
 package com.example.adopt_pet_app.ui.screen.post
 
-import PostRepository
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -14,6 +13,7 @@ import androidx.compose.runtime.setValue
 import com.example.adopt_pet_app.data.model.Post
 import com.example.adopt_pet_app.data.remote.CloudinaryService
 import com.example.adopt_pet_app.data.remote.CloudinaryService.uploadImage
+import com.example.adopt_pet_app.data.repository.PostRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage

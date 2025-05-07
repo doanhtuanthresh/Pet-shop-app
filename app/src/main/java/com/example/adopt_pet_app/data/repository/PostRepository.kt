@@ -1,3 +1,5 @@
+package com.example.adopt_pet_app.data.repository
+
 import com.example.adopt_pet_app.data.model.Post
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,26 +18,27 @@ class PostRepository {
         age: String,
         imageUrl: String,
         location: String,
-        description: String,
-        createdAt: FieldValue = FieldValue.serverTimestamp()
+        description: String
     ): Task<Void> {
         val postId = firestore.collection("posts").document().id
 
-        val post = Post(
-            userId = userId,
-            petName = petName,
-            type = type,
-            gender = gender,
-            age = age,
-            imageUrl = imageUrl,
-            location = location,
-            description = description,
-            createdAt = null // sẽ được Firestore tự gán bằng Rule
+        // Sử dụng Map để lưu trực tiếp FieldValue.serverTimestamp()
+        val postMap = mapOf(
+            "id" to postId,
+            "userId" to userId,
+            "petName" to petName,
+            "type" to type,
+            "gender" to gender,
+            "age" to age,
+            "imageUrl" to imageUrl,
+            "location" to location,
+            "description" to description,
+            "createdAt" to FieldValue.serverTimestamp()
         )
 
         return firestore.collection("posts")
             .document(postId)
-            .set(post)
+            .set(postMap)
     }
 
     fun addToFavorites(userId: String, postId: String): Task<Void> {
@@ -77,7 +80,6 @@ class PostRepository {
                 onError(e)
             }
     }
-
 
     fun getAllPosts(
         onResult: (List<Post>) -> Unit,

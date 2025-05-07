@@ -42,6 +42,11 @@ fun HomeScreen(navController: NavHostController) {
     val postViewModel: PostViewModel = viewModel()
     val posts = postViewModel.userPosts
 
+    var selectedCategory by remember { mutableStateOf("All") }
+
+    val filteredPosts = posts.filter {
+        selectedCategory == "All" || it.type.equals(selectedCategory, ignoreCase = true)
+    }
 
     LaunchedEffect(Unit) {
         postViewModel.loadAllPosts()
@@ -53,7 +58,6 @@ fun HomeScreen(navController: NavHostController) {
             listState.firstVisibleItemScrollOffset < previousOffset.value || listState.firstVisibleItemIndex == 0
         }
     }
-
 
     // Cập nhật vị trí cuộn
     LaunchedEffect(listState.firstVisibleItemScrollOffset) {
@@ -90,7 +94,9 @@ fun HomeScreen(navController: NavHostController) {
                         Spacer(modifier = Modifier.height(16.dp))
                         CategoryTabs(
                             categories = listOf("All", "Dog", "Cat", "Rabbit"),
-                            onCategorySelected = { /* TODO */ }
+                            onCategorySelected = { category ->
+                                selectedCategory = category
+                            }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
@@ -111,13 +117,13 @@ fun HomeScreen(navController: NavHostController) {
                 }
             }
 
-            items(posts) { post ->
+            items(filteredPosts) { post ->
                 PostItem(
                     post = post,
                     onUserClick = { username ->
                         navController.navigate("profile/$username")
                     },
-                    onPostClick = { postId -> // 🆕 Điều hướng tới chi tiết bài viết
+                    onPostClick = { postId ->
                         navController.navigate("postDetail/$postId")
                     }
                 )

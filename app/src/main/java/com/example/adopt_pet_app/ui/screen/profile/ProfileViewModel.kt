@@ -1,29 +1,52 @@
 package com.example.adopt_pet_app.ui.screen.profile
 
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.adopt_pet_app.data.model.Post
-import PostRepository
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.getValue
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.setValue
+import com.example.adopt_pet_app.data.repository.PostRepository
+import android.util.Log
 
-class ProfileViewModel : ViewModel() {
+
+class ProfileViewModel(private val userId: String) : ViewModel() {
     private val repository = PostRepository()
 
-    var userPosts: SnapshotStateList<Post> = mutableStateListOf()
+    val userPosts = mutableStateListOf<Post>()
+    var username by mutableStateOf("")
         private set
 
-    fun loadUserPosts(userId: String) {
+    init {
+        loadUserPosts()
+        loadUserProfile()
+    }
+
+    fun loadUserPosts() {
         repository.getUserPosts(
-            userId = userId,
+            userId,
             onResult = {
                 userPosts.clear()
                 userPosts.addAll(it)
             },
             onError = {
-                // Có thể log hoặc hiển thị thông báo lỗi nếu muốn
+                Log.e("ProfileViewModel", "Error loading posts", it)
             }
         )
     }
+
+    fun loadUserProfile() {
+        viewModelScope.launch {
+            try {
+                val doc = Firebase.firestore.collection("users").document(userId).get().await()
+                username = doc.getString("username") ?: "Unknown"
+            } catch (e: Exception) {
+                username = "Error"
+            }
+        }
+    }
 }
+
