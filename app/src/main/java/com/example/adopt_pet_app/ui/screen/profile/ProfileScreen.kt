@@ -22,6 +22,7 @@ import androidx.navigation.NavHostController
 import com.example.adopt_pet_app.R
 import com.example.adopt_pet_app.ui.component.BottomNavBar
 import com.example.adopt_pet_app.ui.component.PostItem
+import com.google.firebase.auth.FirebaseAuth
 
 const val PROFILE = "profile/{userId}"
 fun getProfileRoute(userId: String) = "profile/$userId"
@@ -111,6 +112,12 @@ fun ProfileScreen(userId: String, navController: NavHostController) {
             }
         }
 
-        BottomNavBar()
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        BottomNavBar(
+            navController = navController,
+            userId = currentUserId,
+            selectedIndex = 3  // hoặc chỉ số tương ứng tab "Profile"
+        )
     }
 }

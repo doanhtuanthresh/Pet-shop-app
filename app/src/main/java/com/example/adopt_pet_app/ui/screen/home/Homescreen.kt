@@ -31,7 +31,7 @@ import com.example.adopt_pet_app.ui.component.SearchBar
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.adopt_pet_app.ui.navigation.Routes
 import com.example.adopt_pet_app.ui.screen.post.PostViewModel
-
+import com.google.firebase.auth.FirebaseAuth
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -41,6 +41,7 @@ fun HomeScreen(navController: NavHostController) {
     val previousOffset = remember { mutableStateOf(0) }
     val postViewModel: PostViewModel = viewModel()
     val posts = postViewModel.userPosts
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     var selectedCategory by remember { mutableStateOf("All") }
 
@@ -65,7 +66,13 @@ fun HomeScreen(navController: NavHostController) {
     }
 
     Scaffold(
-        bottomBar = { BottomNavBar() }
+        bottomBar = {
+            BottomNavBar(
+                navController = navController,
+                userId = userId,
+                selectedIndex = 0
+            )
+        }
     ) { padding ->
         LazyColumn(
             state = listState,
