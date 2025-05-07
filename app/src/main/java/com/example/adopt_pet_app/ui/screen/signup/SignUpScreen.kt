@@ -1,4 +1,3 @@
-// File: ui/screen/signup/SignUpScreen.kt
 package com.example.adopt_pet_app.ui.screen.signup
 
 import androidx.compose.foundation.Image
@@ -24,13 +23,28 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.adopt_pet_app.R
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
-fun SignUpScreen(viewModel: SignUpViewModel = viewModel(),onNavigateToLogin: () -> Unit) {
+fun SignUpScreen(
+    viewModel: SignUpViewModel = viewModel(),
+    onNavigateToLogin: () -> Unit,
+    onNavigateToHome: () -> Unit
+) {
     val name by viewModel::name
     val email by viewModel::email
     val password by viewModel::password
     val passwordVisible by viewModel::passwordVisible
+    val signUpSuccess by viewModel::signUpSuccess
+    val errorMessage by viewModel::errorMessage
+    val isLoading by viewModel::isLoading
+
+    LaunchedEffect(signUpSuccess) {
+        println("DEBUG: signUpSuccess = $signUpSuccess")
+        if (signUpSuccess) {
+            onNavigateToHome()
+        }
+    }
 
     Scaffold { innerPadding ->
         Column(
@@ -67,50 +81,46 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel(),onNavigateToLogin: () 
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Name field
+            // Name
             OutlinedTextField(
                 value = name,
                 onValueChange = viewModel::onNameChanged,
                 label = { Text("Name") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Person, contentDescription = null)
-                },
+                leadingIcon = { Icon(Icons.Default.Person, null) },
                 textStyle = TextStyle(fontWeight = FontWeight.Bold),
+                enabled = !isLoading,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Email field
+            // Email
             OutlinedTextField(
                 value = email,
                 onValueChange = viewModel::onEmailChanged,
                 label = { Text("Email") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Email, contentDescription = null)
-                },
+                leadingIcon = { Icon(Icons.Default.Email, null) },
                 textStyle = TextStyle(fontWeight = FontWeight.Bold),
+                enabled = !isLoading,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Password field
+            // Password
             OutlinedTextField(
                 value = password,
                 onValueChange = viewModel::onPasswordChanged,
                 label = { Text("Password") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Key, contentDescription = null)
-                },
+                leadingIcon = { Icon(Icons.Default.Key, null) },
                 trailingIcon = {
                     val icon = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                     IconButton(onClick = viewModel::togglePasswordVisibility) {
                         Icon(imageVector = icon, contentDescription = null)
                     }
                 },
-                visualTransformation = if (passwordVisible) VisualTransformation.None
-                else PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                enabled = !isLoading,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -119,6 +129,7 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel(),onNavigateToLogin: () 
             // Sign up Button
             Button(
                 onClick = viewModel::onSignUpClick,
+                enabled = !isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -126,6 +137,22 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel(),onNavigateToLogin: () 
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Text("Sign up", color = Color.White)
+            }
+
+            // Hiển thị lỗi nếu có
+            if (errorMessage.isNotBlank()) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 12.dp)
+                )
+            }
+
+            // Loading
+            if (isLoading) {
+                Spacer(modifier = Modifier.height(16.dp))
+                CircularProgressIndicator(color = Color(0xFF6A1B9A), strokeWidth = 3.dp)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -143,3 +170,4 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel(),onNavigateToLogin: () 
         }
     }
 }
+

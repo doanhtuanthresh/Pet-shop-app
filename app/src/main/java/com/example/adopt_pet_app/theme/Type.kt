@@ -1,11 +1,16 @@
-package com.example.adopt_pet_app.ui.theme
+package com.example.adopt_pet_app.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.adopt_pet_app.R
 
+val InknutFontFamily = FontFamily(
+    Font(R.font.inknut_antiqua_bold, FontWeight.Bold)
+)
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
@@ -14,6 +19,13 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
+    ),
+
+    titleMedium = TextStyle(
+        fontFamily = InknutFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 23.sp,
+        lineHeight = 28.sp
     )
     /* Other default text styles to override
     titleLarge = TextStyle(

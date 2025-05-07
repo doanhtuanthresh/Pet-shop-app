@@ -22,14 +22,40 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.adopt_pet_app.R
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.LaunchedEffect
 
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = viewModel(),onNavigateToRegister: () -> Unit) {
+fun LoginScreen(
+    viewModel: LoginViewModel = viewModel(),
+    onNavigateToRegister: () -> Unit,
+    onNavigateToHome: () -> Unit
+) {
     val email = viewModel.username
     val password = viewModel.password
     val passwordVisible = viewModel.passwordVisible
+    val loginError = viewModel.loginError
+    val loginSuccess = viewModel.loginSuccess
+    val isAlreadyLoggedIn = viewModel.isAlreadyLoggedIn
 
+    // Nếu đã đăng nhập từ trước thì chuyển thẳng vào Home
+    LaunchedEffect(isAlreadyLoggedIn) {
+        if (isAlreadyLoggedIn) {
+            onNavigateToHome()
+        }
+    }
+
+    // Khi đăng nhập thành công
+    LaunchedEffect(loginSuccess) {
+        if (loginSuccess == true) {
+            onNavigateToHome()
+        }
+    }
+
+    // Kiểm tra trạng thái đăng nhập khi màn mở
+    LaunchedEffect(Unit) {
+        viewModel.checkAlreadyLoggedIn()
+    }
 
     Scaffold { innerPadding ->
         Column(
@@ -51,35 +77,28 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(),onNavigateToRegister: ()
 
             // Title
             Text("Login", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Text("Enter your email and Password", fontSize = 14.sp, color = Color.Gray)
-
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Email field
+            // Email
             OutlinedTextField(
                 value = email,
                 onValueChange = viewModel::onUsernameChanged,
                 label = { Text("Email") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Email, contentDescription = null)
-                },
+                leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
                 textStyle = TextStyle(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Password field
+            // Password
             OutlinedTextField(
                 value = password,
                 onValueChange = viewModel::onPasswordChanged,
                 label = { Text("Password") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Key, contentDescription = null)
-                },
+                leadingIcon = { Icon(imageVector = Icons.Default.Key, contentDescription = null) },
                 trailingIcon = {
                     val icon = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                     IconButton(onClick = viewModel::togglePasswordVisibility) {
@@ -89,6 +108,16 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(),onNavigateToRegister: ()
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
+
+            // Hiển thị lỗi nếu có
+            if (loginError != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = loginError,
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -124,3 +153,4 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(),onNavigateToRegister: ()
         }
     }
 }
+

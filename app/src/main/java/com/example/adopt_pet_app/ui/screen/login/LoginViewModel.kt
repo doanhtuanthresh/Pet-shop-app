@@ -4,8 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginViewModel : ViewModel() {
+
     var username by mutableStateOf("")
         private set
 
@@ -13,6 +17,15 @@ class LoginViewModel : ViewModel() {
         private set
 
     var passwordVisible by mutableStateOf(false)
+        private set
+
+    var loginSuccess by mutableStateOf<Boolean?>(null)
+        private set
+
+    var loginError by mutableStateOf<String?>(null)
+        private set
+
+    var isAlreadyLoggedIn by mutableStateOf(false)
         private set
 
     fun onUsernameChanged(newUsername: String) {
@@ -28,7 +41,32 @@ class LoginViewModel : ViewModel() {
     }
 
     fun onLoginClick() {
-        // TODO: xử lý đăng nhập, gọi API, v.v...
-        println("Login với: $username - $password")
+        viewModelScope.launch {
+            try {
+                FirebaseAuth.getInstance()
+                    .signInWithEmailAndPassword(username, password)
+                    .addOnSuccessListener {
+                        loginSuccess = true
+                        loginError = null
+                    }
+                    .addOnFailureListener { exception ->
+                        loginError = exception.message
+                        loginSuccess = false
+                    }
+            } catch (e: Exception) {
+                loginError = e.message
+                loginSuccess = false
+            }
+        }
     }
+
+    fun checkAlreadyLoggedIn() {
+        viewModelScope.launch {
+            // TODO: Đọc UserPreferences để biết đã đăng nhập chưa
+            // isAlreadyLoggedIn = userPreferences.isLoggedIn()
+            isAlreadyLoggedIn = false // Tạm set false, bạn sẽ gắn DataStore sau
+        }
+    }
+
+
 }

@@ -1,4 +1,4 @@
-package com.example.adopt_pet_app.ui.theme
+package com.example.adopt_pet_app.theme
 
 import android.app.Activity
 import android.os.Build
@@ -35,7 +35,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun Adopt_pet_appTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false,
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
