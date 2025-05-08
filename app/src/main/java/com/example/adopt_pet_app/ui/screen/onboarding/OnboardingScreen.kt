@@ -54,6 +54,8 @@ fun OnboardingScreen(
             textAlign = TextAlign.Center
         )
 
+        Spacer(modifier = Modifier.height(30.dp))
+
         // Nút Get Started
         Button(
             onClick = onGetStartedClick,

@@ -21,11 +21,10 @@ class ProfileViewModel(private val userId: String) : ViewModel() {
         private set
 
     init {
-        loadUserPosts()
-        loadUserProfile()
+        fetchUserData()
     }
 
-    fun loadUserPosts() {
+    fun fetchUserPosts() {
         repository.getUserPosts(
             userId,
             onResult = {
@@ -38,7 +37,7 @@ class ProfileViewModel(private val userId: String) : ViewModel() {
         )
     }
 
-    fun loadUserProfile() {
+    fun fetchUserProfile() {
         viewModelScope.launch {
             try {
                 val doc = Firebase.firestore.collection("users").document(userId).get().await()
@@ -48,5 +47,9 @@ class ProfileViewModel(private val userId: String) : ViewModel() {
             }
         }
     }
-}
 
+    fun fetchUserData() {
+        fetchUserProfile()
+        fetchUserPosts()
+    }
+}

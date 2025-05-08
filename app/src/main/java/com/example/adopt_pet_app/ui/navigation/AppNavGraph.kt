@@ -14,6 +14,8 @@ import com.example.adopt_pet_app.ui.screen.home.HomeScreen
 import com.example.adopt_pet_app.ui.screen.post.PostDetailScreen
 import com.example.adopt_pet_app.ui.screen.profile.ProfileScreen
 import com.example.adopt_pet_app.ui.screen.post.PostScreen
+import com.example.adopt_pet_app.ui.screen.profile.EditProfileScreen
+
 // TODO: import SearchScreen, CategoryScreen, PostDetailScreen nếu đã có
 
 object Routes {
@@ -111,6 +113,11 @@ fun AppNavGraph(navController: NavHostController) {
         composable("postDetail/{postId}") { backStackEntry ->
             val postId = backStackEntry.arguments?.getString("postId") ?: ""
             PostDetailScreen(postId)
+        }
+
+        composable("editProfile/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            EditProfileScreen(userId = userId, navController = navController)
         }
 
     }

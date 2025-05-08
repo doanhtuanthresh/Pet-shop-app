@@ -16,4 +16,3 @@ data class Post(
     val description: String = "",
     @ServerTimestamp val createdAt: Timestamp? = null
 )
-

@@ -62,11 +62,7 @@ class LoginViewModel : ViewModel() {
 
     fun checkAlreadyLoggedIn() {
         viewModelScope.launch {
-            // TODO: Đọc UserPreferences để biết đã đăng nhập chưa
-            // isAlreadyLoggedIn = userPreferences.isLoggedIn()
-            isAlreadyLoggedIn = false // Tạm set false, bạn sẽ gắn DataStore sau
+            isAlreadyLoggedIn = FirebaseAuth.getInstance().currentUser != null
         }
     }
-
-
 }
