@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
         setupUserPresence()
 
         setContent {
-            gAdopt_pet_appTheme {
+            Adopt_pet_appTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
