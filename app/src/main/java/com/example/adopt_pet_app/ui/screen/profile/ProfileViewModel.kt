@@ -1,0 +1,68 @@
+package com.example.adopt_pet_app.ui.screen.profile
+
+import androidx.compose.runtime.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.adopt_pet_app.data.model.Post
+import com.google.firebase.firestore.ktx.firestore
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.example.adopt_pet_app.data.repository.PostRepository
+import android.util.Log
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
+
+
+class ProfileViewModel(private val userId: String) : ViewModel() {
+    private val repository = PostRepository()
+
+    val userPosts = mutableStateListOf<Post>()
+    var username by mutableStateOf("")
+        private set
+    var phoneNumber by mutableStateOf("")
+        private set
+
+    var location by mutableStateOf("")
+        private set
+
+
+    init {
+        Log.d("DEBUG_ProfileVM", "Received userId = '$userId'")
+        fetchUserData()
+    }
+
+    fun fetchUserPosts() {
+        repository.getUserPosts(
+            userId,
+            onResult = {
+                userPosts.clear()
+                userPosts.addAll(it)
+            },
+            onError = {
+                Log.e("ProfileViewModel", "Error loading posts", it)
+            }
+        )
+    }
+
+    fun fetchUserProfile() {
+        viewModelScope.launch {
+            try {
+                val doc = Firebase.firestore.collection("users").document(userId).get().await()
+                username = doc.getString("username") ?: "Unknown"
+                phoneNumber = doc.getString("phoneNumber") ?: ""
+                location = doc.getString("location") ?: ""
+            } catch (e: Exception) {
+                Log.e("DEBUG_ProfileVM", "Fetch failed!", e)
+                username = "Error"
+                phoneNumber = ""
+                location = ""
+            }
+        }
+    }
+
+    fun fetchUserData() {
+        fetchUserProfile()
+        fetchUserPosts()
+    }
+}
